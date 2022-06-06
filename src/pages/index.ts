@@ -36,6 +36,61 @@ export class Index extends LitElement {
         font-size:12px;
         color: gray;
       }
+      .down{
+        transform-box: fill-box;
+        transform-origin: center;
+        animation: ro 1s forwards;  /*animation 指定动画名和持续时间，结束后保持*/ 
+      }
+      .up{
+        transform-box: fill-box;
+        transform-origin: center;
+        animation: ro2 1s forwards;  /*animation 指定动画名和持续时间，结束后保持*/ 
+      }
+      @keyframes ro{
+        100%{
+          transform: rotate(0.5turn);
+        }
+      }
+      @keyframes ro2{
+        0%{
+          transform: rotate(0.5turn);
+        }
+        100%{
+          transform: rotate(0turn);
+        }
+      }
+      .origin-hide{
+        display:none;
+      }
+      .origin-show{
+        display:block;
+      }
+      .show{
+        display: block;
+        animation: fade-in 1s;
+      }
+      .hide{
+        display: block;
+        animation: fade-out 1s;
+      }
+
+      @keyframes fade-in {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      
+      @keyframes fade-out {
+        from {
+          opacity: 1;
+        }
+        to {
+          opacity: 0;
+        }
+      }
     `
   ];
 
@@ -62,6 +117,21 @@ export class Index extends LitElement {
       }
     })
     console.log(this._data)
+  }
+  private _showDetails(e: any){
+    var svgDown = e.currentTarget;
+    var detailsDiv = svgDown.parentElement.parentElement.querySelector('div[ref=details]')
+    if(svgDown.getAttribute('class') != 'down'){
+        svgDown.setAttribute('class', 'down')
+        detailsDiv.classList.add('show')
+        setTimeout(()=>detailsDiv.classList= ['origin-show'], 800)
+    }
+    else{
+      svgDown.setAttribute('class', 'up')
+      detailsDiv.classList.add('hide')
+      setTimeout(()=>detailsDiv.classList=['origin-hide'], 700)
+
+    }
   }
 
   private _getDays(mondayStr): Array<String> {
@@ -92,9 +162,9 @@ export class Index extends LitElement {
               <p style="color:#888">${explain}</p>
             `)}
             <div style="display:flex; justify-content:center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="ionicon" width="30px" style="cursor:pointer" viewBox="0 0 512 512"><title>Caret Down Circle</title><path d="M464 256c0-114.87-93.13-208-208-208S48 141.13 48 256s93.13 208 208 208 208-93.13 208-208zm-99.73-44L256 342.09 147.73 212z"/></svg>
+                <svg @click=${this._showDetails} xmlns="http://www.w3.org/2000/svg" class="ionicon" width="30px" style="cursor:pointer" viewBox="0 0 512 512"><title>Caret Down Circle</title><path d="M464 256c0-114.87-93.13-208-208-208S48 141.13 48 256s93.13 208 208 208 208-93.13 208-208zm-99.73-44L256 342.09 147.73 212z"/></svg>
               </div>
-            <div>
+            <div ref="details" class="origin-hide">
               <div>
                 <p style="margin: 0 auto">短语：</p>
                 ${item.wordGroup.map(wg=>html`
