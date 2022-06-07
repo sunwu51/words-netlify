@@ -6,6 +6,9 @@ import {merge} from '../utils/promise'
 import 'wired-elements/lib/wired-card.js';
 import "../utils/vaadin.js";
 import { TextField } from '../utils/vaadin.js';
+import { addWord, clearWordNote, getAllWords, getWordDetails } from '../utils/fetchData.js';
+import '../components/Suggest';
+import '../components/WordCard';
 
 @customElement('w-search')
 export class Search extends LitElement {
@@ -13,12 +16,10 @@ export class Search extends LitElement {
     css`
       :host {
         display: block;
-        height: 100%;
       }
       .container{
         display: flex;
         justify-content: center;
-        height: 100%;
       }
       .search{
         width: 80%;
@@ -26,56 +27,13 @@ export class Search extends LitElement {
         max-width: 600px;
         margin-top: 2%;
       }
-
-      li:hover{
-        color: #ffffff;
-        background: #7cadec;
-        border-radius: 5px;
-      }
-      .lidetail {
-        display: none;
-      }
-      li:hover .lidetail {
-        display: block;
-      }
-      li:hover .liex {
-        display: none;
-      }
-      li:hover .lidetail p{
-        margin: 3px 10px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-      li:hover > div {
+      .btn_container{
         display: flex;
-        flex-direction: column;
+        justify-content: center;
+        padding: 0 10px;
       }
-
-      .suggest{
+      vaddin-button{
         width: 100%;
-        background-color: rgb(245, 248, 253);
-        border-radius: 6px;
-        margin-top: 0px;
-        border: solid aliceblue;
-      }
-      ul{
-        margin:0;
-        padding: 0;
-      }
-      li{
-        list-style: none;
-        padding: 5px 30px;
-      }
-      li > div{
-        display: flex;
-        justify-content: space-between;
-      }
-      li > div > .liex{
-        max-width: 50%;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
       }
     `
   ];
@@ -89,40 +47,67 @@ export class Search extends LitElement {
   @state()
   _data = []
 
-  // protected firstUpdated(_changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>): void {
-   
-  // }
+  @state()
+  _show = false;
 
-  connectedCallback(): void {
-    super.connectedCallback()
-    var _this = this;
-    fetch("/api/list.json").then(res=>res.json()).then(list=>{
-      var tmp = new TrieTree()
-      list.forEach(it=>tmp.insert(it, it))
-      _this._trie = tmp;
-    })
+  empty = {word:'', phonetic:'',explains:[], sentences:[], wordGroup: []}
+
+  @state()
+  _showData = this.empty;
+
+  protected async firstUpdated(_changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>) {
+    var list = await getAllWords();
+    var tmp = new TrieTree()
+    list.forEach(it=>tmp.insert(it, it))
+    this._trie = tmp;
   }
 
   private async _onchange(e: Event) {
     var {value} = this.shadowRoot.getElementById("input") as TextField;
-    this._inputValue = value;
-    if(!value || value.length<2){
-      this._data = [];
-      return;
-    }
-    var res = this._trie.startsWith(value);
-    var data = await this._fetchDetail(res.splice(0, 10))
-    this._data = data;
-    console.log(data)
+
+    let v = value;
+    setTimeout(async ()=>{
+      let {value} = this.shadowRoot.getElementById("input") as TextField;
+      if(v==value) {
+        this._inputValue = value;
+        if(!value || value.length<2){
+          this._data = [];
+          return;
+        }
+        var res = this._trie.startsWith(value);
+        res = res.splice(0, 5);
+        var tmp  = res.map(it=>({word:it, explains:[]}));
+        this._data = tmp;
+        var data = await getWordDetails(res);
+        if (this._data == tmp){
+          this._data = data;
+        }
+      }
+    }, 1000)
+
+    
   }
 
-  async _fetchDetail(words) {
-    var result =[]
-    var promises = words.map(word=>axios(`/api/dict/${word}.json`))
-    console.log(promises)
-    result = await merge(promises)
-    result = result.map(it=> it? it.data: it)
-    return result;
+  private async _onClickDetails(word){
+    console.log(word)
+    var data = await getWordDetails([word]);
+    this._showData = data[0];
+    this._show = true;
+    console.log(JSON.stringify(this._showData))
+  }
+
+  private async _addWord(word){
+    this.shadowRoot.querySelector("#btn").disabled = true;
+    try{
+      await addWord(word);
+      this._show = false;
+      this._showData = this.empty;
+      clearWordNote();
+      alert("插入成功");
+    }catch(e){
+      alert("插入失败请查看日志");
+    }
+    this.shadowRoot.querySelector("#btn").disabled = false;
   }
 
   render() {
@@ -134,33 +119,23 @@ export class Search extends LitElement {
     } else if (this._data.length == 0){
       msg = "词库中没有该单词..."
     }
-    return html`<div class="container">
-      <div class="search">
-      <vaadin-text-field id='input' style="width: 100%" @input=${this._onchange} aria-label="search"  placeholder="Search" clear-button-visible>
-        <vaadin-icon icon="vaadin:search" slot="prefix"></vaadin-icon>
-      </vaadin-text-field>
-      <div class="suggest">
-        <ul id="ul">
-          ${
-           msg ? html`<p style='padding: 0px 30px;'>${msg}</p>` :
-              this._data.map((data) =>
-                html`<li>
-                  <div>
-                    <div class="liword">${data.word}</div>
-                    <div class="liex">${data.explains.join(';')}</div>
-                    <div class="lidetail">
-                      ${
-                        data.explains.map(ex=>
-                          html`<p>${ex}</p>`  
-                        )
-                      }
-                    </div>
-                  </div>
-                </li>`
-              )
-          }
-        </ul>
+    return html`
+    <div>
+      <div class="container" style="min-height: 300px">
+        <div class="search">
+          <vaadin-text-field id='input' style="width: 100%" @input=${this._onchange} aria-label="search"  placeholder="Search" clear-button-visible>
+            <vaadin-icon icon="vaadin:search" slot="prefix"></vaadin-icon>
+          </vaadin-text-field>
+          <w-suggest-card .msg=${msg} .data=${this._data} .clickItem=${this._onClickDetails.bind(this)}></w-suggest-card>
+        </div>
       </div>
+      <div class="container">
+        <div  style="display: ${this._show? 'block': 'none'}">
+          <w-word-card .item=${this._showData} ></w-word-card>
+          <div class="btn_container">
+            <vaadin-button id="btn" style="width: 100%;" @click=${(e)=>this._addWord(this._showData.word)}>ADD</vaadin-button>
+          </div>
+        </div>
       </div>
     </div>`;
   }

@@ -80,3 +80,22 @@ export async function getWordDetails(words){
     console.log(e)
   }
 }
+
+export async function addWord(word){
+  try{
+    console.log(`add ${word}`)
+    await axios({
+      url: herokuUrl + '/add',
+      method: "POST",
+      data: {word}
+    });
+  }catch(e){
+    console.error("插入单词失败", word, e);
+    throw e;
+  }
+}
+
+export function clearWordNote(){
+  sessionStorage.removeItem("/words");
+  getAllLearningWords();
+}
