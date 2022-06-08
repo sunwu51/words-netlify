@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const herokuUrl = '/heroku';//https://polar-wave-72056.herokuapp.com/
+const secret = import.meta.env.VITE_SECRET || "demo";
+const herokuUrl = 'https://polar-wave-72056.herokuapp.com';
 
 /**
  * 获取单词本所有的单词，格式如下
@@ -87,7 +88,7 @@ export async function addWord(word){
     await axios({
       url: herokuUrl + '/add',
       method: "POST",
-      data: {word}
+      data: {word, secret}
     });
   }catch(e){
     console.error("插入单词失败", word, e);
