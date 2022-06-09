@@ -12,6 +12,12 @@ export class Index extends LitElement {
       :host {
         display: block;
       }
+      @media (max-width: 500px){
+        
+        h1{
+          font-size: 30px;
+        }
+      }
     `
   ];
 

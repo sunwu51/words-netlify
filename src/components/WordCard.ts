@@ -5,6 +5,18 @@ import "wired-elements/lib/wired-card.js";
 @customElement("w-word-card")
 export class WordCard extends LitElement {
   static styles = css`
+  @media (max-width: 500px){
+    wired-card{
+      margin: 0px;
+      width: 300px;
+    } 
+  }
+  @media (min-width: 500px){
+    wired-card{
+      margin: 10px;
+      width: 380px;
+    }
+  }
   .wg{
     margin: 5px auto;
   }
@@ -107,7 +119,7 @@ export class WordCard extends LitElement {
 
   render() {
     return html`
-        <wired-card elevation="5" style="margin: 10px; width: 400px">
+        <wired-card elevation="5">
           <div style="padding: 10px 20px;">
             <div style="display: grid; grid: auto/auto auto;align-items: center;">
               <h2>${this.item.word}</h2>

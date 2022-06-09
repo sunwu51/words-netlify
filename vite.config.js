@@ -5,6 +5,7 @@ export default defineConfig({
     define:{
       secret: process.env.secret || 'secret-demo'
     },
+    hmr:{protocol:'rewrewr'},
     proxy:{
       '/heroku':{
         target: 'https://polar-wave-72056.herokuapp.com/',
