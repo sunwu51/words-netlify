@@ -8,7 +8,7 @@ export class WordCard extends LitElement {
   @media (max-width: 500px){
     wired-card{
       margin: 0px;
-      width: 300px;
+      width: 340px;
     } 
   }
   @media (min-width: 500px){
@@ -79,6 +79,10 @@ export class WordCard extends LitElement {
     display: block;
     animation: fade-out 1s;
   }
+  .arrow-div{
+    display:flex; 
+    justify-content:center
+  }
 
   @keyframes fade-in {
     from {
@@ -139,10 +143,12 @@ export class WordCard extends LitElement {
             ${this.item.explains.map(
               (explain) => html` <p style="color:#888">${explain}</p> `
             )}
-            <div style="display:flex; justify-content:center">
+            <div class="arrow-div">
                 <svg @click=${
                   this._showDetails
-                } xmlns="http://www.w3.org/2000/svg" class="ionicon" width="30px" style="cursor:pointer" viewBox="0 0 512 512"><title>Caret Down Circle</title><path d="M464 256c0-114.87-93.13-208-208-208S48 141.13 48 256s93.13 208 208 208 208-93.13 208-208zm-99.73-44L256 342.09 147.73 212z"/></svg>
+                } xmlns="http://www.w3.org/2000/svg" class="ionicon" style="cursor:pointer;width:30px" viewBox="0 0 512 512">
+                  <path d="M464 256c0-114.87-93.13-208-208-208S48 141.13 48 256s93.13 208 208 208 208-93.13 208-208zm-99.73-44L256 342.09 147.73 212z"/>
+                </svg>
               </div>
             <div ref="details" class="origin-hide">
               <div>
