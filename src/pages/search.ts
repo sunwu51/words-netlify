@@ -97,6 +97,10 @@ export class Search extends LitElement {
   }
 
   private async _addWord(word){
+    if (!localStorage.getItem('xyz')){
+      alert("暂不支持")
+      return
+    }
     this.shadowRoot.querySelector("#btn").disabled = true;
     try{
       await addWord(word);
@@ -133,7 +137,7 @@ export class Search extends LitElement {
         <div  style="display: ${this._show? 'block': 'none'}">
           <w-word-card .item=${this._showData} ></w-word-card>
           <div class="btn_container">
-            <vaadin-button id="btn" style="width: 100%;" @click=${(e)=>this._addWord(this._showData.word)}>ADD</vaadin-button>
+            <vaadin-button  id="btn" style="width: 100%;" @click=${(e)=>this._addWord(this._showData.word)}>ADD</vaadin-button>
           </div>
         </div>
       </div>

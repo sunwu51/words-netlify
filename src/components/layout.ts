@@ -85,7 +85,7 @@ export class Layout extends LitElement {
           <!--下方放一个头像和作者署名-->
           <div class='bottom'>
             <div style="display: flex; margin-left: 18px">
-              <vaadin-avatar
+              <vaadin-avatar @dblclick=${()=>localStorage.setItem('xyz',"1")}
                 .img="${avatar}"
               >
               </vaadin-avatar>
