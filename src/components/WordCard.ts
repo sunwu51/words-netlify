@@ -7,8 +7,8 @@ export class WordCard extends LitElement {
   static styles = css`
   @media (max-width: 500px){
     wired-card{
-      margin: 0px;
-      width: 340px;
+      margin: -2px;
+      width: 330px;
     } 
   }
   @media (min-width: 500px){
