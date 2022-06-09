@@ -81,7 +81,8 @@ export class WordCard extends LitElement {
   }
   .arrow-div{
     display:flex; 
-    justify-content:center
+    justify-content:center;
+    max-height: 32px;
   }
 
   @keyframes fade-in {
