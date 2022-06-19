@@ -1,5 +1,5 @@
 # words项目的前端代码
-采用google的`LIT`框架 和 `tailwind`样式
+采用google的`LIT`框架使用原生的web components。
 
 # setup
 nodejs >14 <18
