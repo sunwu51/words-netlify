@@ -3,7 +3,7 @@ import { defineConfig } from "vite";
 export default defineConfig({
   server:{
     define:{
-      secret: process.env.secret || 'secret-demo'
+      secret: process.env.secret || 'secret-demo',
       api_url: process.env.API_URL || "xx";
     },
     hmr:{protocol:'rewrewr'},
