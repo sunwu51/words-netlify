@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const secret = import.meta.env.VITE_SECRET || "demo";
-const herokuUrl = import.meta.env.API_URL // 'https://words-urvl.onrender.com'; //'https://polar-wave-72056.herokuapp.com';
+const herokuUrl = import.meta.env.VITE_API_URL || "";
 
 console.log({herokuUrl})
 
