@@ -3,6 +3,8 @@ import axios from "axios";
 const secret = import.meta.env.VITE_SECRET || "demo";
 const herokuUrl = import.meta.env.API_URL // 'https://words-urvl.onrender.com'; //'https://polar-wave-72056.herokuapp.com';
 
+console.log({herokuUrl})
+
 /**
  * 获取单词本所有的单词，格式如下
  * @returns demo  [
